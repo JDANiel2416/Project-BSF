@@ -1,7 +1,4 @@
-<?php
-$page_title = 'Quiénes Somos | Banderas Sin Fronteras';
-include 'includes/header.php';
-?>
+<?php include '../app/Views/layout/header.php'; ?>
 <div class="content-section">
     <div class="container">
         <div class="page-intro">
@@ -29,4 +26,4 @@ include 'includes/header.php';
         </div>
     </div>
 </div>
-<?php include 'includes/footer.php'; ?>
+<?php include '../app/Views/layout/footer.php'; ?>

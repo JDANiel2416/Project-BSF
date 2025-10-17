@@ -1,7 +1,4 @@
-<?php
-$page_title = 'Voluntariado | Banderas Sin Fronteras';
-include 'includes/header.php';
-?>
+<?php include '../app/Views/layout/header.php'; ?>
 <div class="content-section">
     <div class="container">
         <div class="page-intro">
@@ -33,8 +30,8 @@ include 'includes/header.php';
             <h2>¿Listo para Unirte a Nuestra Misión?</h2>
             <p>Tu colaboración es fundamental. Al unirte a Banderas Sin Fronteras, no solo ofreces tu ayuda, sino que
                 también desarrollas habilidades y te unes a una red comprometida con la justicia social.</p>
-            <a href="contacto.php" class="btn btn-primary">¡Quiero ser voluntario!</a>
+            <a href="<?php echo BASE_URL; ?>/contacto" class="btn btn-primary">¡Quiero ser voluntario!</a>
         </div>
     </div>
 </div>
-<?php include 'includes/footer.php'; ?>
+<?php include '../app/Views/layout/footer.php'; ?>

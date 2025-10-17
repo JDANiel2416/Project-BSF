@@ -1,7 +1,4 @@
-<?php
-$page_title = 'Nuestros Proyectos | Banderas Sin Fronteras';
-include 'includes/header.php';
-?>
+<?php include '../app/Views/layout/header.php'; ?>
 <div class="content-section">
     <div class="container">
         <div class="page-intro">
@@ -11,7 +8,7 @@ include 'includes/header.php';
                 educación y la resiliencia.</p>
         </div>
         <div class="proyecto-card-detailed scroll-animated fade-in-up" style="transition-delay: 0.1s;">
-            <div class="proyecto-logo"><img src="img/logo-tejiendo.png" alt="Tejiendo Sueños"></div>
+            <div class="proyecto-logo"><img src="<?php echo BASE_URL; ?>/img/logo-tejiendo.png" alt="Tejiendo Sueños"></div>
             <div class="proyecto-info">
                 <h3>Tejiendo Sueños</h3>
                 <p>Este proyecto se centra en el empoderamiento de las mujeres migrantes y de la población de acogida,
@@ -20,7 +17,7 @@ include 'includes/header.php';
             </div>
         </div>
         <div class="proyecto-card-detailed scroll-animated fade-in-up" style="transition-delay: 0.2s;">
-            <div class="proyecto-logo"><img src="img/logo-jovenes.png" alt="Jóvenes Sin Fronteras"></div>
+            <div class="proyecto-logo"><img src="<?php echo BASE_URL; ?>/img/logo-jovenes.png" alt="Jóvenes Sin Fronteras"></div>
             <div class="proyecto-info">
                 <h3>Jóvenes Sin Fronteras</h3>
                 <p>Buscamos fortalecer las capacidades de acción y resiliencia de niñas, adolescentes y mujeres jóvenes,
@@ -29,7 +26,7 @@ include 'includes/header.php';
             </div>
         </div>
         <div class="proyecto-card-detailed scroll-animated fade-in-up" style="transition-delay: 0.3s;">
-            <div class="proyecto-logo"><img src="img/logo-habil.png" alt="Habil Junior"></div>
+            <div class="proyecto-logo"><img src="<?php echo BASE_URL; ?>/img/logo-habil.png" alt="Habil Junior"></div>
             <div class="proyecto-info">
                 <h3>Habil Junior</h3>
                 <p>Un taller de verano creativo para el desarrollo de habilidades y empoderamiento infantil. Promovemos
@@ -38,4 +35,4 @@ include 'includes/header.php';
         </div>
     </div>
 </div>
-<?php include 'includes/footer.php'; ?>
+<?php include '../app/Views/layout/footer.php'; ?>

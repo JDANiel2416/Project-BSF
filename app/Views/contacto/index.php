@@ -1,7 +1,4 @@
-<?php
-$page_title = 'Contacto | Banderas Sin Fronteras';
-include 'includes/header.php';
-?>
+<?php include '../app/Views/layout/header.php'; ?>
 <header class="contact-hero">
     <div class="animated fade-in-down">
         <p>¿QUIERES MÁS INFORMACIÓN?</p>
@@ -25,4 +22,4 @@ include 'includes/header.php';
         </div>
     </div>
 </div>
-<?php include 'includes/footer.php'; ?>
+<?php include '../app/Views/layout/footer.php'; ?>

@@ -1,0 +1,16 @@
+{
+    "name": "bsf/bsfv01",
+    "description": "Sitio web para Banderas Sin Fronteras.",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Daniel",
+            "email": "N00287069@upn.pe"
+        }
+    ],
+    "require": {}
+}

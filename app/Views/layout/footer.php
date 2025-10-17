@@ -3,8 +3,8 @@
     <div class="container">
         <div class="footer-content">
             <div class="footer-brand">
-                <a href="index.php" class="footer-logo">
-                    <img src="img/logo-bsf.png" alt="Logo Banderas Sin Fronteras">
+                <a href="<?php echo BASE_URL; ?>/inicio" class="footer-logo">
+                    <img src="<?php echo BASE_URL; ?>/img/logo-bsf.png" alt="Logo Banderas Sin Fronteras">
                 </a>
                 <p class="copyright">
                     &copy; <?php echo date('Y'); ?> Banderas Sin Fronteras.<br>
@@ -26,6 +26,6 @@
         </div>
     </div>
 </footer>
-<script src="js/main.js"></script>
+<script src="<?php echo BASE_URL; ?>/js/main.js"></script>
 </body>
 </html>
