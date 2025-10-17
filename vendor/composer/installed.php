@@ -1,6 +1,6 @@
 <?php return array(
     'root' => array(
-        'name' => 'bsf/bsfv01',
+        'name' => 'bsf/bsf',
         'pretty_version' => '1.0.0+no-version-set',
         'version' => '1.0.0.0',
         'reference' => null,
@@ -10,7 +10,7 @@
         'dev' => true,
     ),
     'versions' => array(
-        'bsf/bsfv01' => array(
+        'bsf/bsf' => array(
             'pretty_version' => '1.0.0+no-version-set',
             'version' => '1.0.0.0',
             'reference' => null,

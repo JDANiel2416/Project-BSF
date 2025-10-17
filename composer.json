@@ -1,5 +1,5 @@
 {
-    "name": "bsf/bsfv01",
+    "name": "bsf/bsf",
     "description": "Sitio web para Banderas Sin Fronteras.",
     "autoload": {
         "psr-4": {
