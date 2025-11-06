@@ -5,16 +5,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.addEventListener('scroll', function () {
         let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
         if (scrollTop > lastScrollTop && scrollTop > header.offsetHeight) {
             header.classList.add('header-hidden');
         } else {
             header.classList.remove('header-hidden');
         }
-        if (scrollTop > 50) { header.classList.add('header-shadow'); } 
-        else { header.classList.remove('header-shadow'); }
+
+        if (scrollTop > 50) { 
+            header.classList.add('header-scrolled');
+        } else { 
+            header.classList.remove('header-scrolled'); 
+        }
+
         lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
     }, false);
-
 
     const navToggle = document.querySelector('.nav-toggle');
     const mainNav = document.querySelector('.main-nav');
