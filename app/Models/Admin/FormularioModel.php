@@ -59,7 +59,7 @@ class FormularioModel {
             mysqli_stmt_bind_param($stmtVersion, 'iis', $formId, $newVersionNumber, $formDefinitionJson);
             
             if (!mysqli_stmt_execute($stmtVersion)) {
-                 throw new \Exception("No se pudo guardar la versión del formulario: " . mysqli_stmt_error($stmtVersion));
+                throw new \Exception("No se pudo guardar la versión del formulario: " . mysqli_stmt_error($stmtVersion));
             }
 
             mysqli_commit($db);
@@ -94,5 +94,18 @@ class FormularioModel {
         mysqli_close($db);
         
         return $row ? $row['form_definition'] : null;
+    }
+
+    public function countVersions(int $projectId) {
+        $db = \conectarDB();
+        $query = "SELECT COUNT(*) as total FROM form_versions fv JOIN forms f ON f.id = fv.form_id WHERE f.project_id = ?";
+        $stmt = mysqli_prepare($db, $query);
+        mysqli_stmt_bind_param($stmt, 'i', $projectId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+        mysqli_close($db);
+        return $row['total'] ?? 0;
     }
 }

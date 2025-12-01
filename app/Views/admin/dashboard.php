@@ -1,174 +1,120 @@
-<?php include 'layout/header.php' ?>
+<?php include PROJECT_ROOT . '/app/Views/admin/layout/header.php'; ?>
 
-<div class="dashboard-container sidebar-container"> 
-    <!-- BARRA LATERAL -->
-    <aside class="sidebar">
+<div class="dashboard-container sidebar-container" id="main-wrapper">
+    
+    <aside class="sidebar" id="sidebar">
+        <button id="toggle-sidebar-btn" title="Alternar menú">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
         <div class="sidebar-brand">
             <a href="<?php echo ADMIN_URL; ?>/dashboard">
-                <img src="<?php echo PUBLIC_URL; ?>/img/logo-bsf-nigth.png" alt="Logo BSF Completo" class="logo-full">
-                <img src="<?php echo PUBLIC_URL; ?>/img/logo-bsf-nigth.png" alt="Logo BSF Icono" class="logo-icon">
+                <img src="<?php echo PUBLIC_URL; ?>/img/logo-bsf-nigth.png" alt="BSF" class="logo-full">
+                <img src="<?php echo PUBLIC_URL; ?>/img/logo-bsf-nigth.png" alt="BSF" class="logo-icon">
             </a>
         </div>
+
         <div class="sidebar-content">
-            <div class="sidebar-header">
-                <a href="#" class="btn-nuevo">
-                    <i class="fas fa-plus"></i>
-                    <span>NUEVO</span>
-                </a>
-            </div>
+            <button id="btn-open-create-modal" class="btn-nuevo">
+                <i class="fas fa-plus"></i>
+                <span>NUEVO</span>
+            </button>
+            
             <nav class="sidebar-nav">
                 <ul>
-                    <li class="active">
-                        <a href="#"><i class="fas fa-tasks"></i><span>Activos</span></a>
+                    <li class="active" id="nav-item-active">
+                        <a href="#" data-action="load-active"><i class="fas fa-list-ul"></i><span>Activos</span></a>
                     </li>
-                    <li>
-                        <a href="#"><i class="fas fa-archive"></i><span>Archivados</span></a>
+                    <li id="nav-item-archived">
+                        <a href="#" data-action="load-archived"><i class="fas fa-archive"></i><span>Archivados</span></a>
                     </li>
                 </ul>
             </nav>
         </div>
-        <div class="sidebar-footer">
-            <button id="toggle-sidebar-btn" title="Retraer/Expandir barra lateral">
-                <i class="fas fa-chevron-left icon-collapse"></i>
-                <i class="fas fa-chevron-right icon-expand"></i>
-            </button>
-        </div>
     </aside>
 
-
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="main-content">
+    <main class="main-content" id="main-content-area">
+        
         <header class="main-header">
             <div class="header-left">
-                <h1>Mis proyectos</h1>
+                <h1 id="header-title">Mis proyectos</h1>
             </div>
+            
             <div class="header-center">
-                <div class="search-bar">
+                <div class="search-bar" id="header-search-container">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Buscar...">
+                    <input type="text" id="global-search" placeholder="Buscar proyecto por nombre..." aria-label="Buscar proyectos">
                 </div>
             </div>
+            
             <div class="header-right">
-                <a href="<?php echo ADMIN_URL; ?>/logout" class="btn-logout">Cerrar Sesión</a>
+                <div class="user-profile-link">
+                    <span>Admin</span>
+                </div>
+                <a href="<?php echo ADMIN_URL; ?>/logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i></a>
             </div>
         </header>
 
-        <div class="table-container">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox"></th>
-                        <th>Nombre del proyecto</th>
-                        <th>Estado</th>
-                        <th>Propietario</th>
-                        <th>Fecha de Creación</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($proyectos)): ?>
-                        <tr>
-                            <td colspan="5" style="text-align: center;">No hay proyectos para mostrar.</td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($proyectos as $proyecto): ?>
+        <div id="dynamic-view-container" class="view-container">
+            
+            <div id="view-projects-list" class="active-view">
+                <div class="table-container">
+                    <table class="data-table" id="projects-table">
+                        <thead>
                             <tr>
-                                <td><input type="checkbox"></td>
-                                <td><a href="#"><?php echo htmlspecialchars($proyecto['nombre']); ?></a></td>
-                                <td>
-                                    <span class="status status-<?php echo strtolower($proyecto['estado']); ?>">
-                                        <?php echo htmlspecialchars(ucfirst($proyecto['estado'])); ?>
-                                    </span>
-                                </td>
-                                <td><?php echo htmlspecialchars($proyecto['propietario'] ?? 'N/A'); ?></td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($proyecto['fecha_modificacion'])); ?></td>
+                                <th style="width: 40px;"><input type="checkbox" id="check-all"></th>
+                                <th>Nombre</th>
+                                <th>Estado</th>
+                                <th>Sector</th>
+                                <th>País</th>
+                                <th>Fecha</th>
+                                <th style="width: 50px;"></th>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($proyectos)): ?>
+                                <tr><td colspan="7" style="text-align: center; padding: 2rem; color:#999;">No hay proyectos.</td></tr>
+                            <?php else: ?>
+                                <?php foreach ($proyectos as $p): ?>
+                                <tr data-id="<?php echo $p['id']; ?>" class="project-row">
+                                    <td><input type="checkbox" class="row-check"></td>
+                                    <td>
+                                        <span class="project-name-link"><?php echo htmlspecialchars($p['nombre']); ?></span>
+                                    </td>
+                                    <td>
+                                        <?php 
+                                            $statusClass = strtolower($p['estado']);
+                                            $statusLabel = ucfirst($p['estado'] == 'draft' ? 'borrador' : $p['estado']);
+                                        ?>
+                                        <span class="status status-<?php echo $statusClass == 'draft' ? 'draft' : 'active'; ?>">
+                                            <?php echo $statusLabel; ?>
+                                        </span>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($p['sector'] ?? '-'); ?></td>
+                                    <td><?php echo htmlspecialchars($p['pais'] ?? '-'); ?></td>
+                                    <td><?php echo date('d/m/Y', strtotime($p['fecha_modificacion'])); ?></td>
+                                    <td class="actions-cell">
+                                        <div class="dropdown">
+                                            <button class="btn-icon-action"><i class="fas fa-ellipsis-v"></i></button>
+                                            <div class="dropdown-content">
+                                                <button><i class="fas fa-pen"></i> Editar</button>
+                                                <button><i class="fas fa-copy"></i> Duplicar</button>
+                                                <button class="btn-delete-action"><i class="fas fa-trash"></i> Eliminar</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="ajax-content-slot"></div>
         </div>
     </main>
 </div>
 
-<div id="modal-nuevo-proyecto" class="modal-overlay hidden">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Crear proyecto: Seleccionar una fuente</h2>
-            <button class="close-modal" aria-label="Cerrar">&times;</button>
-        </div>
-        <div class="modal-body">
-            <p>Seleccionar una de las siguientes opciones para continuar.</p>
-            <div class="modal-options-grid">
-                <!-- Opción 1: Crear desde borrador -->
-                <a href="#" id="crear-borrador-btn" class="option-card">
-                    <div class="option-card-icon">
-                        <i class="fas fa-pencil-alt"></i>
-                    </div>
-                    <div class="option-card-text">Crear Formulario</div>
-                </a>
-
-                <!-- Opción 3: Cargar XLSForm -->
-                <a href="#" class="option-card">
-                    <div class="option-card-icon">
-                        <i class="fas fa-upload"></i>z
-                    </div>
-                    <div class="option-card-text">Cargar un XLSForm</div>
-                </a>
-
-                <!-- Opción 4: Importar desde URL -->
-                <a href="#" class="option-card">
-                    <div class="option-card-icon">
-                        <i class="fas fa-link"></i>
-                    </div>
-                    <div class="option-card-text">Importar un XLSForm a través de URL</div>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="modal-detalles-proyecto" class="modal-overlay hidden">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Crear proyecto: Detalles del proyecto</h2>
-            <button class="close-modal" aria-label="Cerrar">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form action="#" method="POST">
-                <div class="form-group-modal">
-                    <label for="proyecto-nombre">Nombre del proyecto (obligatorio)</label>
-                    <input type="text" id="proyecto-nombre" class="input-modal" placeholder="Ingresa el título del proyecto aquí">
-                </div>
-                <div class="form-group-modal">
-                    <label for="proyecto-descripcion">Descripción</label>
-                    <textarea id="proyecto-descripcion" class="textarea-modal" placeholder="Ingresa una breve descripción aquí"></textarea>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group-modal">
-                        <label for="proyecto-sector">Sector (obligatorio)</label>
-                        <select id="proyecto-sector" class="select-modal">
-                            <option value="" disabled selected>Seleccionar...</option>
-                            <option value="otro">Otro</option>
-                        </select>
-                    </div>
-                    <div class="form-group-modal">
-                        <label for="proyecto-pais">País (obligatorio)</label>
-                        <select id="proyecto-pais" class="select-modal">
-                            <option value="" disabled selected>Seleccionar...</option>
-                            <option value="peru">Perú</option>
-                            <option value="venezuela">Venezuela</option>
-                            <option value="colombia">Colombia</option>
-                            <option value="otro">Otro</option>
-                        </select>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button id="btn-regresar" type="button" class="btn-modal-secondary">Regresar</button>
-            <button id="btn-crear-proyecto" type="submit" class="btn-modal-primary">Crear proyecto</button>
-        </div>
-    </div>
-</div>
-
-<?php include 'layout/footer.php';  ?>
+<?php include PROJECT_ROOT . '/app/Views/admin/proyecto/_create_modal.php'; ?>
+<?php include PROJECT_ROOT . '/app/Views/admin/layout/footer.php'; ?>

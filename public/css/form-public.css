@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: #f0f2f5; color: #333; }
+* { box-sizing: border-box; }
+
+.form-container { max-width: 720px; margin: 40px auto; min-height: 80vh; display: flex; flex-direction: column; }
+
+/* Header Simple */
+.form-header { text-align: left; margin-bottom: 10px; padding-left: 20px; }
+.brand-logo { height: 40px; object-fit: contain; }
+
+/* Card Principal estilo Hoja */
+.form-card { background: white; border: 1px solid #ddd; border-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; position: relative; padding: 0; }
+
+/* Título del Proyecto */
+.form-intro { padding: 30px 40px 20px 40px; border-bottom: 1px solid #eee; text-align: center; }
+.form-intro h1 { margin: 0 0 15px 0; font-size: 26px; color: #3d4f5d; font-weight: 700; }
+.form-intro .description { color: #666; font-size: 14px; line-height: 1.5; margin: 0; }
+
+#public-form { padding: 40px; }
+
+/* Preguntas */
+.q-item { margin-bottom: 30px; }
+.q-label { display: block; font-size: 16px; font-weight: 600; margin-bottom: 10px; color: #333; }
+.req-star { color: #d93025; margin-left: 4px; }
+
+.form-control { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 4px; background: #fff; font-family: inherit; font-size: 15px; transition: border 0.2s; }
+.form-control:focus { outline: none; border-color: #6D4C7F; box-shadow: 0 0 0 2px rgba(109, 76, 127, 0.1); }
+
+/* Botones de Acción */
+.form-actions { margin-top: 40px; display: flex; gap: 15px; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 20px; }
+
+.btn-submit { background-color: #3c8dbc; /* Azul Kobo */ color: white; border: none; padding: 10px 30px; border-radius: 3px; font-weight: 600; cursor: pointer; font-size: 14px; transition: background 0.2s; display: flex; align-items: center; gap: 8px; }
+.btn-submit:hover { background-color: #367fa9; }
+.btn-submit:disabled { background-color: #ccc; cursor: not-allowed; }
+
+.btn-reset { background: #f4f4f4; color: #666; border: 1px solid #ddd; padding: 10px 20px; border-radius: 3px; cursor: pointer; font-weight: 500; font-size: 14px; }
+.btn-reset:hover { background: #e7e7e7; }
+
+.form-footer { text-align: center; font-size: 11px; color: #999; margin-top: 20px; }
+
+/* Success Screen (CORREGIDO) */
+/* El !important es vital aquí para sobreescribir el display: flex */
+.hidden { display: none !important; }
+
+.success-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(240, 242, 245, 0.95); z-index: 1000; display: flex; justify-content: center; align-items: center; }
+.success-box { background: white; padding: 50px; border-radius: 8px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 450px; width: 90%; border-top: 5px solid #28a745; }
+.check-icon { font-size: 50px; color: #28a745; margin-bottom: 20px; }
+.btn-outline { background: white; border: 1px solid #ddd; padding: 10px 20px; border-radius: 4px; cursor: pointer; color: #555; margin-top: 25px; font-weight: 500; transition: all 0.2s; }
+.btn-outline:hover { border-color: #aaa; color: #333; }
+
+.fade-in { animation: fadeIn 0.5s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
