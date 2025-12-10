@@ -97,6 +97,9 @@ switch ($controller_name) {
             case 'getMapAjax':
                 $controller->getMapAjax($params);
                 break;
+            case 'getGalleryAjax':
+                $controller->getGalleryAjax($params);
+                break;
             default:
                 http_response_code(404);
                 echo json_encode(['success' => false, 'message' => 'Método no encontrado']);

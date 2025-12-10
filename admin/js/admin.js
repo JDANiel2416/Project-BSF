@@ -186,20 +186,84 @@ document.addEventListener('DOMContentLoaded', function () {
             ajaxSlot.innerHTML = '<p style="text-align:center; padding:20px;">Error al cargar vista.</p>';
         }
     }
+    
     // --- INTERACCIONES DE VISTAS AJAX ---
     ajaxSlot.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-jump-to-data')) {
+            e.preventDefault();
+            const btn = e.target.closest('.btn-jump-to-data');
+            const targetSection = btn.dataset.target;
+
+            const wrapper = btn.closest('.project-detail-wrapper');
+            const tabLinkData = wrapper.querySelector('.tab-link[data-tab="data"]');
+            const tabPaneData = document.getElementById('tab-data');
+            const formProject = document.getElementById('form-update-project');
+
+            if (!tabLinkData || !tabPaneData || !formProject) return;
+
+            // 1. CAMBIO VISUAL DE PESTAÑAS
+            wrapper.querySelectorAll('.tab-link').forEach(t => t.classList.remove('active'));
+            wrapper.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            tabLinkData.classList.add('active');
+            tabPaneData.classList.add('active');
+
+            if (tabPaneData.querySelector('.data-tab-layout')) {
+                const sidebarItems = tabPaneData.querySelectorAll('.data-nav-item');
+                sidebarItems.forEach(item => {
+                    if (item.textContent.trim().includes(targetSection)) {
+                        item.click();
+                    }
+                });
+                return;
+            }
+
+            const projectId = formProject.dataset.id;
+            tabPaneData.innerHTML = '<div style="display:flex;justify-content:center;padding:50px;"><div class="spinner" style="border:3px solid #eee;border-top:3px solid #6D4C7F;border-radius:50%;width:40px;height:40px;animation:spin 1s infinite"></div></div>';
+
+            fetch(`${ADMIN_URL}/proyectos/getDataTableAjax/${projectId}`)
+                .then(res => res.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const contentArea = doc.querySelector('.data-content-area');
+                    if (contentArea) {
+                        contentArea.innerHTML = '<div style="text-align:center;padding:50px;"><div class="spinner" style="border:3px solid #eee;border-top:3px solid #6D4C7F;border-radius:50%;width:30px;height:30px;animation:spin 1s infinite;margin:0 auto 10px;"></div><span style="color:#666;">Cargando ' + targetSection + '...</span></div>';
+                    }
+                    const sidebarItems = doc.querySelectorAll('.data-nav-item');
+                    sidebarItems.forEach(item => {
+                        item.classList.remove('active');
+                        if (item.textContent.trim().includes(targetSection)) {
+                            item.classList.add('active');
+                        }
+                    });
+
+                    doc.querySelectorAll('script').forEach(s => s.remove());
+
+                    tabPaneData.innerHTML = doc.body.innerHTML;
+
+                    setTimeout(() => {
+                        const newSidebarItems = tabPaneData.querySelectorAll('.data-nav-item');
+                        newSidebarItems.forEach(item => {
+                            if (item.textContent.trim().includes(targetSection)) {
+                                item.click();
+                            }
+                        });
+                    }, 0);
+                });
+
+            return;
+        }
+
         // Cerrar Constructor
         if (e.target.closest('#btn-close-builder')) {
             loadView('detail', e.target.closest('#btn-close-builder').dataset.id);
             return;
         }
 
-        // Click en Tabs Principales (RESUMEN, FORMULARIO, DATOS, CONFIGURACIÓN)
+        // Click en Tabs Principales
         if (e.target.classList.contains('tab-link')) {
             const tabId = e.target.dataset.tab;
             const wrapper = e.target.closest('.project-detail-wrapper');
-
-            // UI Toggle Active
             wrapper.querySelectorAll('.tab-link').forEach(t => t.classList.remove('active'));
             wrapper.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
             e.target.classList.add('active');
@@ -213,7 +277,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const sidebarItems = document.querySelectorAll('.data-nav-item');
                 sidebarItems.forEach(item => item.classList.remove('active'));
 
-                // Buscar el item que dice "Tabla" y activarlo
                 sidebarItems.forEach(item => {
                     if (item.textContent.trim().includes('Tabla')) {
                         item.classList.add('active');
@@ -300,7 +363,29 @@ document.addEventListener('DOMContentLoaded', function () {
                         });
                     });
             }
-            // 3. CARGAR DESCARGA 
+            // 3. CARGAR IMÁGENES
+            else if (sectionName === 'Galería') {
+                fetch(`${ADMIN_URL}/proyectos/getGalleryAjax/${projectId}`)
+                    .then(res => res.text())
+                    .then(html => {
+                        dataArea.innerHTML = html;
+                        // Ejecutar scripts inyectados (window.currentGalleryData)
+                        const scripts = dataArea.querySelectorAll('script');
+                        scripts.forEach(s => {
+                            const ns = document.createElement('script');
+                            if (s.src) ns.src = s.src; else ns.textContent = s.textContent;
+                            document.body.appendChild(ns); document.body.removeChild(ns);
+                        });
+
+                        // Inicializar lógica de la galería
+                        initGallery();
+                    })
+                    .catch(err => {
+                        console.error("Error cargando galería:", err);
+                        dataArea.innerHTML = '<div class="data-placeholder"><i class="fas fa-exclamation-circle"></i><p>Error al cargar la galería.</p></div>';
+                    });
+            }
+            // 4. CARGAR DESCARGA 
             else if (sectionName === 'Descarga') {
                 fetch(`${ADMIN_URL}/proyectos/getExportAjax/${projectId}`)
                     .then(res => res.text())
@@ -318,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         dataArea.innerHTML = '<p style="color:red; text-align:center;">Error al cargar el módulo de descargas.</p>';
                     });
             }
-            // 4. CARGAR MAPA (NUEVO)
+            // 5. CARGAR MAPA 
             else if (sectionName === 'Mapa') {
                 fetch(`${ADMIN_URL}/proyectos/getMapAjax/${projectId}`)
                     .then(res => res.text())
@@ -338,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         });
                     });
             }
-            // 4. Otros
+            // 6. Otros
             else {
                 dataArea.innerHTML = '<div class="data-placeholder"><i class="fas fa-tools"></i><p>Sección en construcción.</p></div>';
             }
@@ -758,7 +843,6 @@ document.addEventListener('DOMContentLoaded', function () {
             questions = [];
         }
 
-        // Normalizar datos y asegurar estructura
         questions.forEach(q => {
             if (q.type === 'select' && !Array.isArray(q.options)) {
                 q.options = ['Opción 1', 'Opción 2'];
@@ -768,11 +852,31 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!q.required) q.required = 'no';
 
             if (!q.logic) q.logic = { conditions: [] };
-            // Validación ahora tiene criteria (lista) y errorMessage (string global)
             if (!q.validation) q.validation = { criteria: [], errorMessage: '' };
         });
 
         window.currentFormQuestions = questions;
+
+        let originalQuestionsState = JSON.stringify(questions);
+        const btnSave = document.getElementById('btn-save-builder');
+
+        function updateSaveButtonState() {
+            if (!btnSave) return;
+            const currentJson = JSON.stringify(questions);
+
+            if (currentJson !== originalQuestionsState) {
+                // Hay cambios
+                btnSave.disabled = false;
+                if (!btnSave.innerHTML.includes('fa-spinner')) {
+                    btnSave.innerHTML = '<i class="fas fa-save"></i> Guardar Cambios';
+                }
+            } else {
+                btnSave.disabled = true;
+                btnSave.innerHTML = '<i class="fas fa-save"></i> Guardar';
+            }
+        }
+
+        updateSaveButtonState();
 
         const container = document.getElementById('questions-container');
         const emptyState = document.getElementById('empty-state-container');
@@ -860,6 +964,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     el.querySelector('.q-text-input').addEventListener('input', (ev) => {
                         questions[idx].text = ev.target.value;
                         window.currentFormQuestions = questions;
+                        updateSaveButtonState(); // <--- ACTUALIZA BOTÓN
                     });
 
                     if (q.type === 'select') {
@@ -868,6 +973,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 const optIdx = parseInt(ev.target.dataset.optIndex);
                                 questions[idx].options[optIdx] = ev.target.value;
                                 window.currentFormQuestions = questions;
+                                updateSaveButtonState();
                             });
                         });
                     }
@@ -895,6 +1001,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
             window.currentFormQuestions = questions;
+            updateSaveButtonState();
         }
 
         render();
@@ -1221,20 +1328,26 @@ document.addEventListener('DOMContentLoaded', function () {
             btn.addEventListener('click', () => document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden')));
         });
 
-        // Guardar Server
-        const btnSave = document.getElementById('btn-save-builder');
         if (btnSave) {
             btnSave.addEventListener('click', async function () {
+                if (btnSave.disabled) return;
                 const btn = this;
                 const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
                 const fd = new FormData();
                 fd.append('form_definition', JSON.stringify(questions));
                 try {
                     await fetch(`${ADMIN_URL}/formularios/guardar/${projectId}`, { method: 'POST', body: fd });
                     btn.innerHTML = '<i class="fas fa-check"></i> Guardado';
-                } catch (e) { btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error'; }
-                setTimeout(() => btn.innerHTML = originalHTML, 2000);
+                    originalQuestionsState = JSON.stringify(questions);
+                } catch (e) {
+                    btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+                }
+                setTimeout(() => {
+                    updateSaveButtonState();
+                }, 2000);
             });
         }
 
@@ -1245,7 +1358,6 @@ document.addEventListener('DOMContentLoaded', function () {
             newBtn.addEventListener('click', () => openPreviewModal(questions));
         }
     }
-    // ===============================================================
     let tableState = {
         data: [],
         filteredData: [],
@@ -1802,8 +1914,6 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
             detailContainer.appendChild(item);
         });
-
-        // Actualizar contador
         if (counter) counter.textContent = `Registro ${currentDetailIndex + 1} de ${detailRows.length}`;
 
         modal.classList.remove('hidden');
@@ -1858,7 +1968,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 inputHtml = `<div class="edit-radio-group">${optionsHtml}</div>`;
             }
             else if (q.type === 'photo') {
-                // MODIFICADO: Mostrar previsualización y permitir cambio
                 let imgPreview = '<span style="font-size:12px; color:#999;">Sin imagen actual</span>';
                 if (typeof val === 'string' && val.startsWith('uploads/')) {
                     const url = window.PUBLIC_URL + '/' + val;
@@ -1879,7 +1988,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const inputWrapper = document.createElement('div');
             inputWrapper.innerHTML = inputHtml;
 
-            // Lógica para desempaquetar o mantener wrapper
             if (inputWrapper.firstElementChild && (q.type !== 'select' && q.type !== 'photo')) {
                 group.appendChild(inputWrapper.firstElementChild);
             } else {
@@ -1892,10 +2000,8 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.classList.remove('hidden');
     }
 
-    // --- NUEVA LÓGICA DE GUARDADO ---
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('#btn-save-edit');
-
         if (btn) {
             e.preventDefault();
 
@@ -1918,13 +2024,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         alert('Registro actualizado correctamente.');
                         document.getElementById('modal-edit-submission').classList.add('hidden');
 
-                        // Recargar la tabla para ver los cambios
                         const formProject = document.getElementById('form-update-project');
                         if (formProject) {
                             const projectId = formProject.dataset.id;
                             const container = document.querySelector('.data-content-area');
-
-                            // Feedback visual suave (opacidad) mientras carga
                             if (container) container.style.opacity = '0.6';
 
                             fetch(`${ADMIN_URL}/proyectos/getDataTableAjax/${projectId}`)
@@ -1945,7 +2048,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                             document.body.removeChild(newScript);
                                         });
 
-                                        initDataTable(); // Ahora sí usará los datos nuevos
+                                        initDataTable();
                                     }
                                 });
                         }
@@ -1974,5 +2077,95 @@ document.addEventListener('DOMContentLoaded', function () {
     function htmlspecialchars(str) {
         if (typeof str !== "string") return str;
         return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // --- 9. GALERÍA DE EVIDENCIAS ---
+    function initGallery() {
+        const data = window.currentGalleryData || [];
+        const container = document.getElementById('gallery-grid-container');
+        const emptyState = document.getElementById('gallery-empty-state');
+
+        const filterQ = document.getElementById('gallery-filter-question');
+        const filterStart = document.getElementById('gallery-filter-date-start');
+        const filterEnd = document.getElementById('gallery-filter-date-end');
+        const btnReset = document.getElementById('btn-reset-gallery');
+
+        if (!container) return;
+
+        function render(items) {
+            container.innerHTML = '';
+            if (items.length === 0) {
+                container.style.display = 'none';
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            }
+
+            container.style.display = 'grid';
+            if (emptyState) emptyState.classList.add('hidden');
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'gallery-card fade-in';
+
+                const dateObj = new Date(item.date);
+                const dateStr = !isNaN(dateObj) ? dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : item.date;
+
+                card.innerHTML = `
+                    <div class="gallery-img-wrapper">
+                        <img src="${item.src}" alt="Evidencia" loading="lazy">
+                        <a href="${item.src}" target="_blank" class="btn-gallery-zoom" title="Ver original">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                    <div class="gallery-meta">
+                        <span class="gallery-date"><i class="far fa-clock"></i> ${dateStr}</span>
+                        <span class="gallery-q-tag" title="${item.q_text}">${item.q_text}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function applyFilters() {
+            const qVal = filterQ.value;
+            let dStart = null;
+            if (filterStart.value) {
+                const parts = filterStart.value.split('-');
+                dStart = new Date(parts[0], parts[1] - 1, parts[2]);
+            }
+
+            let dEnd = null;
+            if (filterEnd.value) {
+                const parts = filterEnd.value.split('-');
+                dEnd = new Date(parts[0], parts[1] - 1, parts[2]);
+                dEnd.setHours(23, 59, 59, 999);
+            }
+
+            const filtered = data.filter(item => {
+                if (qVal !== 'all' && item.q_id !== qVal) return false;
+                const itemDate = new Date(item.date);
+
+                if (dStart && itemDate < dStart) return false;
+                if (dEnd && itemDate > dEnd) return false;
+
+                return true;
+            });
+            render(filtered);
+        }
+
+        // Event Listeners
+        filterQ.addEventListener('change', applyFilters);
+        filterStart.addEventListener('change', applyFilters);
+        filterEnd.addEventListener('change', applyFilters);
+
+        if (btnReset) {
+            btnReset.addEventListener('click', () => {
+                filterQ.value = 'all';
+                filterStart.value = '';
+                filterEnd.value = '';
+                applyFilters();
+            });
+        }
+        render(data);
     }
 });

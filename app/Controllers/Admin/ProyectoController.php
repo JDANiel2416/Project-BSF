@@ -351,7 +351,6 @@ class ProyectoController
             return;
         }
         // Preparar datos para el modelo
-        // Los inputs vienen como "q_123", necesitamos limpiarlos a "123" para la BD
         $newData = [];
 
         // 1. Procesar Textos/Selects
@@ -640,10 +639,8 @@ class ProyectoController
         }
 
         $markers = [];
-        // Se permite mostrar mapa si hay pregunta GPS o si el sistema detecta lat/lon en metadatos
         $hasGpsField = ($gpsQuestion !== null);
 
-        // 2. Extraer datos
         $submissions = $formModel->getSubmissionsByProjectId((int) $id);
 
         foreach ($submissions as $sub) {
@@ -686,5 +683,18 @@ class ProyectoController
             $hasGpsField = true;
 
         include PROJECT_ROOT . '/app/Views/admin/proyecto/_map_ajax.php';
+    }
+
+    public function getGalleryAjax($params)
+    {
+        $id = $params[0] ?? null;
+        if (!$id) return;
+        $proyectoModel = new Proyecto();
+        $proyecto = $proyectoModel->findById((int) $id);
+        $formModel = new FormularioModel();
+        $formDefinitionJson = $formModel->getLatestFormVersion((int) $id);
+        $questions = json_decode($formDefinitionJson ?: '[]', true);
+        $submissions = $formModel->getSubmissionsByProjectId((int) $id);
+        include PROJECT_ROOT . '/app/Views/admin/proyecto/_gallery_ajax.php';
     }
 }

@@ -8,13 +8,13 @@ $pubUrl = $publicFormUrl ?? '#';
 $isActive = ($p['status'] === 'active');
 $hasPending = $hasPendingChanges ?? false;
 
-// 1. Última Modificación: Si hay versiones, usa esa fecha, si no, la creación del proyecto
+// 1. Si hay versiones, usa esa fecha, si no, la creación del proyecto
 $lastMod = $p['last_modified_at'] ? date('d M Y H:i', strtotime($p['last_modified_at'])) : date('d M Y H:i', strtotime($p['created_at']));
 
-// 2. Última Implementación: Si hay fecha de publicación
+// 2. Si hay fecha de publicación
 $lastDep = $p['last_deployed_at'] ? date('d M Y H:i', strtotime($p['last_deployed_at'])) : '-';
 
-// 3. Último Envío: Si hay fecha de envío
+// 3. Si hay fecha de envío
 $lastSub = $p['last_submission_at'] ? date('d M Y H:i', strtotime($p['last_submission_at'])) : '-';
 
 $isArchived = ($p['status'] === 'archived');
@@ -160,25 +160,39 @@ $actionArchive = $isArchived ? 'restore' : 'archive';
                     <div class="card-panel">
                         <div class="card-header-simple">Datos</div>
                         <ul class="direct-links-list">
-                            <li><a href="#"><span style="display:flex;align-items:center;"><i
-                                            class="fas fa-table icon-left"></i> Tabla</span> <i
-                                        class="fas fa-chevron-right"></i></a></li>
-                            <li><a href="#"><span style="display:flex;align-items:center;"><i
-                                            class="fas fa-chart-bar icon-left"></i> Informes</span> <i
-                                        class="fas fa-chevron-right"></i></a></li>
-                            <li><a href="#"><span style="display:flex;align-items:center;"><i
-                                            class="fas fa-images icon-left"></i> Galería</span> <i
-                                        class="fas fa-chevron-right"></i></a></li>
-                            <li><a href="#"><span style="display:flex;align-items:center;"><i
-                                            class="fas fa-download icon-left"></i> Descargas</span> <i
-                                        class="fas fa-chevron-right"></i></a></li>
-                            <li><a href="#"><span style="display:flex;align-items:center;"><i
-                                            class="fas fa-map-marker-alt icon-left"></i> Mapa</span> <i
-                                        class="fas fa-chevron-right"></i></a></li>
+                            <li>
+                                <a href="#" class="btn-jump-to-data" data-target="Tabla">
+                                    <div><i class="fas fa-table icon-left"></i> Tabla de datos</div>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="btn-jump-to-data" data-target="Informes">
+                                    <div><i class="fas fa-chart-pie icon-left"></i> Informes</div>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="btn-jump-to-data" data-target="Galería">
+                                    <div><i class="fas fa-images icon-left"></i> Galería</div>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="btn-jump-to-data" data-target="Descarga">
+                                    <div><i class="fas fa-file-download icon-left"></i> Descargar datos</div>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="btn-jump-to-data" data-target="Mapa">
+                                    <div><i class="fas fa-map-marked-alt icon-left"></i> Mapa</div>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -292,6 +306,7 @@ $actionArchive = $isArchived ? 'restore' : 'archive';
                 <div class="data-sidebar">
                     <a class="data-nav-item active"><span>Tabla</span> <i class="fas fa-chevron-right"></i></a>
                     <a class="data-nav-item"><span>Informes</span> <i class="fas fa-chevron-right"></i></a>
+                    <a class="data-nav-item"><span>Galería</span> <i class="fas fa-chevron-right"></i></a>
                     <a class="data-nav-item"><span>Descarga</span> <i class="fas fa-chevron-right"></i></a>
                     <a class="data-nav-item"><span>Mapa</span> <i class="fas fa-chevron-right"></i></a>
                 </div>

@@ -253,6 +253,8 @@ body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; backgrou
 .builder-actions { display: flex; gap: 10px; }
 .builder-area { flex-grow: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; }
 .questions-list { width: 100%; max-width: 800px; }
+/* --- ESTADO DEL BOTÓN GUARDAR (NUEVO) --- */
+#btn-save-builder:disabled { background-color: #d1d1d1 !important; color: #888 !important; cursor: not-allowed !important; box-shadow: none !important; transform: none !important; border: 1px solid #ccc; }
 
 /* Question Item */
 .question-item { background: var(--white); border: 1px solid #e0e0e0; border-radius: 6px; padding: 0; margin-bottom: 15px; display: flex; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.2s; position: relative; overflow: hidden; }
@@ -521,3 +523,25 @@ body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; backgrou
 /* --- BOTÓN DE CAPAS (DEBAJO DE PANTALLA COMPLETA) --- */
 .btn-map-layers { position: absolute; top: 55px; right: 12px; z-index: 1000; width: 34px; height: 34px; background-color: #fff; border: 2px solid rgba(0,0,0,0.2); border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #444; transition: all 0.2s; box-shadow: 0 1px 5px rgba(0,0,0,0.2); }
 .btn-map-layers:hover { background-color: #f4f4f4; color: var(--primary); }
+
+/* Estilo para el placeholder de Galería */
+.gallery-placeholder { text-align: center; padding: 60px; color: #999; }
+.gallery-placeholder i { font-size: 48px; margin-bottom: 20px; color: #e0e0e0; }
+
+/* --- ESTILOS DE GALERÍA --- */
+.gallery-tools-bar { display: flex; gap: 20px; background: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; align-items: flex-end; flex-wrap: wrap; }
+.gallery-filter-group { display: flex; flex-direction: column; gap: 5px; }
+.gallery-filter-group label { font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; }
+.gallery-filter-group select,
+.gallery-filter-group input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; min-width: 150px; }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+.gallery-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; transition: all 0.2s; position: relative; }
+.gallery-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: var(--primary); }
+.gallery-img-wrapper { height: 160px; background: #f4f6f8; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+.gallery-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+.gallery-card:hover .gallery-img-wrapper img { transform: scale(1.05); }
+.gallery-meta { padding: 12px; border-top: 1px solid #eee; }
+.gallery-date { font-size: 11px; color: #999; display: block; margin-bottom: 4px; }
+.gallery-q-tag { font-size: 12px; font-weight: 500; color: #333; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.btn-gallery-zoom { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: #333; opacity: 0; transition: opacity 0.2s; cursor: pointer; }
+.gallery-card:hover .btn-gallery-zoom { opacity: 1; }
