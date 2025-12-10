@@ -1,5 +1,5 @@
 -- ====================================
--- ESQUEMA DE BASE DE DATOS
+-- ESQUEMA DE BASE DE DATOS (ACTUALIZADO CON TOKEN EN PROYECTOS)
 -- ====================================
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -64,6 +64,7 @@ DROP TABLE IF EXISTS `projects`, `forms`, `form_versions`, `form_assets`, `proje
 -- Tabla para los proyectos, que son contenedores de formularios.
 CREATE TABLE `projects` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `token` VARCHAR(20) NOT NULL UNIQUE, -- CAMBIO APLICADO: Token único para enlaces públicos/seguridad
   `title` VARCHAR(255) NOT NULL,
   `description` TEXT,
   `owner_id` INT NOT NULL,
@@ -121,10 +122,30 @@ CREATE TABLE `project_permissions` (
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `custom_reports` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `project_id` INT NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `questions_json` JSON NOT NULL, -- IDs de preguntas seleccionadas
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`project_id`) REFERENCES `projects`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `project_exports` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `project_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `file_type` VARCHAR(10) NOT NULL, -- xls, csv, json
+  `file_path` VARCHAR(255) NOT NULL,
+  `row_count` INT DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`project_id`) REFERENCES `projects`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- -----------------------------------------------------------------------------------------
 -- SECCIÓN 3: GESTIÓN DE DATOS Y ENVÍOS
 -- -----------------------------------------------------------------------------------------
-
 DROP TABLE IF EXISTS `submissions`, `media_attachments`, `webhooks`;
 
 -- Tabla para cada envío de datos.

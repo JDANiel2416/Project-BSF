@@ -25,24 +25,26 @@ switch ($controller_name) {
     case 'login-handler':
         (new App\Controllers\Admin\AuthController())->login();
         break;
-        
+
     case 'logout':
         (new App\Controllers\Admin\AuthController())->logout();
         break;
-    
+
     case 'dashboard':
         (new App\Controllers\Admin\DashboardController())->index();
         break;
 
     case 'proyectos':
         $controller = new App\Controllers\Admin\ProyectoController();
-        
+
         switch ($method_name) {
             case 'crear':
-                if ($_SERVER['REQUEST_METHOD'] === 'POST') $controller->crear();
+                if ($_SERVER['REQUEST_METHOD'] === 'POST')
+                    $controller->crear();
                 break;
             case 'actualizar':
-                if ($_SERVER['REQUEST_METHOD'] === 'POST') $controller->actualizar($params);
+                if ($_SERVER['REQUEST_METHOD'] === 'POST')
+                    $controller->actualizar($params);
                 break;
             case 'eliminar':
                 $controller->eliminar($params);
@@ -65,6 +67,36 @@ switch ($controller_name) {
             case 'implementar':
                 $controller->implementar($params);
                 break;
+            case 'getDataTableAjax':
+                $controller->getDataTableAjax($params);
+                break;
+            case 'updateSubmissionStatus':
+                $controller->updateSubmissionStatus();
+                break;
+            case 'updateSubmissionData':
+                $controller->updateSubmissionData();
+                break;
+            case 'deleteSubmissions':
+                $controller->deleteSubmissions();
+                break;
+            case 'getReportsAjax':
+                $controller->getReportsAjax($params);
+                break;
+            case 'saveReport':
+                $controller->saveReport();
+                break;
+            case 'getExportAjax':
+                $controller->getExportAjax($params);
+                break;
+            case 'processExport':
+                $controller->processExport();
+                break;
+            case 'deleteExport':
+                $controller->deleteExport($params);
+                break;
+            case 'getMapAjax':
+                $controller->getMapAjax($params);
+                break;
             default:
                 http_response_code(404);
                 echo json_encode(['success' => false, 'message' => 'Método no encontrado']);
@@ -84,7 +116,7 @@ switch ($controller_name) {
         break;
 
     default:
-        if(empty($controller_name) || $controller_name === 'index.php') {
+        if (empty($controller_name) || $controller_name === 'index.php') {
             if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
                 header('Location: ' . ADMIN_URL . '/dashboard');
             } else {

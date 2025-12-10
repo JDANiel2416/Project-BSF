@@ -12,5 +12,7 @@
             "email": "N00287069@upn.pe"
         }
     ],
-    "require": {}
+    "require": {
+        "phpoffice/phpspreadsheet": "^5.3"
+    }
 }
