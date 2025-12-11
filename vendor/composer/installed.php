@@ -3,7 +3,7 @@
         'name' => 'bsf/bsf',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '1ac19ba2de79d91e8363d2efd0cbda8320164e5d',
+        'reference' => '21ea3d6cd43295e9f5b0cb101dcf2d33c415b5ef',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'bsf/bsf' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '1ac19ba2de79d91e8363d2efd0cbda8320164e5d',
+            'reference' => '21ea3d6cd43295e9f5b0cb101dcf2d33c415b5ef',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

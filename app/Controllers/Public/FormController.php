@@ -44,7 +44,6 @@ class FormController
 
         // Verificar que vengan datos por POST (FormData)
         if (empty($_POST)) {
-            // Intentar fallback a JSON por si acaso (para compatibilidad antigua)
             $jsonInput = file_get_contents('php://input');
             $data = json_decode($jsonInput, true);
         } else {
@@ -60,30 +59,53 @@ class FormController
 
         // --- PROCESAMIENTO DE ARCHIVOS ---
         if (!empty($_FILES['answers']['name'])) {
-            // Crear subcarpetas por Año/Mes (Ej: uploads/2023/10/)
+            // Crear subcarpetas uploads/Año/Mes
             $subFolder = date('Y') . '/' . date('m') . '/';
             $uploadDir = PROJECT_ROOT . '/public/uploads/' . $subFolder;
 
-            // Crear carpeta si no existe
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
 
-            // Iterar sobre los archivos enviados en answers[]
             foreach ($_FILES['answers']['name'] as $questionId => $filename) {
                 if ($_FILES['answers']['error'][$questionId] === UPLOAD_ERR_OK) {
 
                     $tmpName = $_FILES['answers']['tmp_name'][$questionId];
-                    $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                    
+                    // Detectar tipo de archivo real
+                    $fileType = mime_content_type($tmpName);
+                    $isImage = strpos($fileType, 'image/') === 0;
 
-                    // Generar nombre único: timestamp_random.ext
-                    $newFilename = time() . '_' . uniqid() . '.' . $extension;
-                    $targetPath = $uploadDir . $newFilename;
+                    // Nombre base único sin extensión
+                    $baseName = time() . '_' . uniqid();
+                    
+                    if ($isImage) {
+                        // Definir ruta destino SIN extensión
+                        $destinationNoExt = $uploadDir . $baseName;
+                        // Usar el Helper (Namespace completo por seguridad)
+                        // Calidad 75, Ancho máximo 1280px (ajustable)
+                        $finalFullPath = \App\Helpers\ImageHelper::uploadAndCompress($tmpName, $destinationNoExt, 75, 1280);
+                        
+                        if ($finalFullPath) {
+                            // Guardamos la ruta relativa con la extensión .webp que generó el helper
+                            $answers[$questionId] = 'uploads/' . $subFolder . basename($finalFullPath);
+                        } else {
+                            // Fallback si falla la compresión (raro), guardamos original
+                            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                            $finalName = $baseName . '.' . $ext;
+                            move_uploaded_file($tmpName, $uploadDir . $finalName);
+                            $answers[$questionId] = 'uploads/' . $subFolder . $finalName;
+                        }
 
-                    if (move_uploaded_file($tmpName, $targetPath)) {
-                        // Guardar la URL relativa en las respuestas
-                        // Nota: Guardamos "uploads/nombre_archivo.jpg"
-                        $answers[$questionId] = 'uploads/' . $subFolder . $newFilename;
+                    } else {
+                        // === RUTA NORMAL (PDFs, DOCs, etc) ===
+                        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+                        $finalName = $baseName . '.' . $extension;
+                        $targetPath = $uploadDir . $finalName;
+
+                        if (move_uploaded_file($tmpName, $targetPath)) {
+                            $answers[$questionId] = 'uploads/' . $subFolder . $finalName;
+                        }
                     }
                 }
             }
@@ -94,7 +116,6 @@ class FormController
         $end_time = $data['end_time'] ?? date('Y-m-d H:i:s');
 
         $model = new FormPublicModel();
-        // Guardamos $answers (que ahora contiene las rutas de los archivos) como JSON
         $success = $model->saveSubmission(
             (int) $data['version_id'],
             json_encode($answers),
